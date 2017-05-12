@@ -1,6 +1,6 @@
 {
   "name": "d3-tools",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A collections of tools to make using d3 easier.",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/nwpray/d3-tools#readme",
   "dependencies": {
-    "bootstrap-event-listeners" : "0.0.0"
+    "bootstrap-event-listeners": "0.0.0"
   }
 }
