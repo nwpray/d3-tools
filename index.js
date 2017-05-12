@@ -6,5 +6,3 @@ export {D3Margin} from 'D3Margin';
 export {D3RadialChart} from 'D3RadialChart';
 export {D3Size} from 'D3Size';
 export {D3Zone} from 'D3Zone';
-export {EventBus} from 'src/lib/events/EventBus';
-export {ColumnListener} from 'src/lib/bootstrap/ColumnListener';

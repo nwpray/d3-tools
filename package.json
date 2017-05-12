@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/nwpray/d3-tools#readme",
   "dependencies": {
-    "bootstrap-event-listeners": "0.0.0"
+    "d3" : "4.8.0",
+    "bootstrap-event-listeners" : "0.0.0",
+    "es6-event-emitter" : "1.9.0"
   }
 }
