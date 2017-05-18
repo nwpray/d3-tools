@@ -24,6 +24,7 @@ export class D3LineChart extends D3Chart{
         this.range = [0,100];
         this.horizontalZones = [];
         this.lines = [];
+        this.lineDotRadius = 4;
         this.valueDotRadius = 18;
 
         this.yScale = undefined;
@@ -168,7 +169,7 @@ export class D3LineChart extends D3Chart{
             .enter()
             .append('g')
             .attr('class', function(d, index){
-                let dot = this._renderValueDot(d.points[0], d.points[0][1], "line_" + index);
+                let dot = this._renderValueDot(d.points[d.points.length - 1], d.points[d.points.length - 1][1], "line_" + index);
                 this.onMouseDrag(function(pos){
                     let point = d.ClosestPointToX(pos.x);
                     this._moveValueDot(dot, point, point[1]);
@@ -185,7 +186,7 @@ export class D3LineChart extends D3Chart{
             .data(function(d){return d.points})
             .enter().append("circle")
             .attr("class", "dot")
-            .attr("r", 5)
+            .attr("r", this.lineDotRadius)
             .attr("cx", function(d){return this.xScale(d[0]);}.bind(this))
             .attr("cy", function(d){return this.yScale(d[1]);}.bind(this));
     }
@@ -234,8 +235,8 @@ export class D3LineChart extends D3Chart{
     _onMouseMove(){
         if(_this.mouseOver){
             let pos = {
-                x: _this.xScale.invert(d3.mouse(this)[0]),
-                y: _this.yScale.invert(d3.mouse(this)[1])
+                x: _this.xScale.invert(d3.mouse(this)[0] - _this.Dimensions().Margin().Left()),
+                y: _this.yScale.invert(d3.mouse(this)[1] - _this.Dimensions().Margin().Bottom())
             };
 
             _this.eventBus.trigger(EVENT_MOUSE_DRAG, pos);

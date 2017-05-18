@@ -1,7 +1,6 @@
 import {D3ChartDimensions} from "./D3ChartDimensions";
 import {D3Size} from "./D3Size";
 import {D3Margin} from "./D3Margin";
-import * as d3 from "d3";
 
 export class D3Chart{
     constructor(binding){
