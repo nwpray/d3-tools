@@ -1,6 +1,6 @@
 {
   "name": "d3-tools",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A collections of tools to make using d3 easier.",
   "main": "index.js",
   "scripts": {
