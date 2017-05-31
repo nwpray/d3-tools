@@ -15,11 +15,13 @@ export class D3LineChart extends D3Chart{
         super(binding);
 
         _this = this;
-
+        this.mouseOver = false;
         this.eventBus = new EventBus();
         this.columnListener = new ColumnListener();
         this.columnListener.onWidthChange(this._onColumnResize.bind(this));
         this.columnListener.onWidthChecked(this._onScreenResize.bind(this));
+
+        //Modifiable values
         this.domain = [0,100];
         this.range = [0,100];
         this.horizontalZones = [];
@@ -47,13 +49,17 @@ export class D3LineChart extends D3Chart{
                     return d;
                 });
         };
+        this.yTranslator = function(scale, value){
+            return scale(value);
+        };
+        this.xTranslator = function(scale, value){
+            return scale(value);
+        };
         this.lineFormatter = function(){
             return d3.line()
-                .x(function(d) { return this.xScale(d[0]); }.bind(this))
-                .y(function(d) { return this.yScale(d[1]); }.bind(this));
+                .x(function(d, index) { return this.xTranslator(this.xScale, d[0], index); }.bind(this))
+                .y(function(d, index) { return this.yTranslator(this.yScale, d[1], index); }.bind(this));
         };
-
-        this.mouseOver = false;
     }
 
     //Properties
@@ -82,6 +88,75 @@ export class D3LineChart extends D3Chart{
 
         return this.lines;
     }
+    LineDotRadius(radius){
+        if(typeof radius != 'undefined')
+            this.lineDotRadius = radius;
+
+        return this.lineDotRadius;
+    }
+    ValueDotRadius(radius){
+        if(typeof radius != 'undefined')
+            this.valueDotRadius = radius;
+
+        return this.valueDotRadius;
+    }
+
+    XScale(scale){
+        if(typeof scale != 'undefined')
+            this.xScale = scale;
+
+        return this.xScale;
+    }
+    YScale(scale){
+        if(typeof scale != 'undefined')
+            this.yScale = scale;
+
+        return this.yScale;
+    }
+    XScaleType(type){
+        if(typeof type != 'undefined')
+            this.xScaleType = type;
+
+        return this.xScaleType;
+    }
+    YScaleType(type){
+        if(typeof type != 'undefined')
+            this.yScaleType = type;
+
+        return this.yScaleType;
+    }
+
+    XFormatter(formatter){
+        if(typeof formatter != 'undefined')
+            this.xFormatter = formatter;
+
+        return this.xFormatter;
+    }
+    YFormatter(formatter){
+        if(typeof formatter != 'undefined')
+            this.yFormatter = formatter;
+
+        return this.yFormatter;
+    }
+    XTranslator(translator){
+        if(typeof translator != 'undefined')
+            this.xTranslator = translator;
+
+        return this.xTranslator;
+    }
+    YTranslator(translator){
+        if(typeof translator != 'undefined')
+            this.yTranlator = translator;
+
+        return this.yTranlator;
+    }
+    LineFormatter(formatter){
+        if(typeof formatter != 'undefined')
+            this.lineFormatter = formatter;
+
+        return this.lineFormatter;
+    }
+
 
     Render(){
         let element = d3.select(this.binding).html("");
@@ -164,15 +239,31 @@ export class D3LineChart extends D3Chart{
         horizontalZones.exit();
     }
     _renderLines(){
+        let x = 0, y = 1;
         let lines = this.rootGroup.selectAll('.plot-line')
             .data(this.lines)
             .enter()
             .append('g')
             .attr('class', function(d, index){
-                let dot = this._renderValueDot(d.points[d.points.length - 1], d.points[d.points.length - 1][1], "line_" + index);
+                let last_index = d.points.length - 1;
+                let dot = this._renderValueDot(
+                    [this.xTranslator(this.xScale, d.points[last_index][x], last_index), this.yTranslator(this.yScale, d.points[last_index][y], last_index)],
+                    d.points[d.points.length - 1][1], "line_" + index);
                 this.onMouseDrag(function(pos){
-                    let point = d.ClosestPointToX(pos.x);
-                    this._moveValueDot(dot, point, point[1]);
+                    let closest = 0;
+                    let x = 0, y = 1;
+                    let mouseX = this.xScale(pos.x);
+
+                    for(let point = 1; point < d.points.length; point++){
+                        let pointDist = Math.abs(mouseX - this.xTranslator(this.xScale, d.points[point][x], point));
+                        let closestDist = Math.abs(mouseX - this.xTranslator(this.xScale, d.points[closest][x], closest));
+
+                        if(pointDist < closestDist)
+                            closest = point;
+                    }
+                    if(closest !== undefined)
+                        this._moveValueDot(dot, [this.xTranslator(this.xScale, d.points[closest][x], closest), this.yTranslator(this.yScale, d.points[closest][y], closest)], d.points[closest][y]);
+
                 }.bind(this));
                 return "plot-line line_" + index;
             }.bind(this));
@@ -187,13 +278,13 @@ export class D3LineChart extends D3Chart{
             .enter().append("circle")
             .attr("class", "dot")
             .attr("r", this.lineDotRadius)
-            .attr("cx", function(d){return this.xScale(d[0]);}.bind(this))
-            .attr("cy", function(d){return this.yScale(d[1]);}.bind(this));
+            .attr("cx", function(d, index){return this.xTranslator(this.xScale, d[0], index);}.bind(this))
+            .attr("cy", function(d, index){return this.yTranslator(this.yScale, d[1], index);}.bind(this));
     }
     _renderValueDot(coords, display_value, css_class){
         let dot_group = this.rootGroup.append("g")
             .classed("value-dot", true)
-            .attr("transform", "translate(" + this.xScale(coords[0]) + "," + this.yScale(coords[1]) + ")");
+            .attr("transform",  "translate(" + coords[0] + "," + coords[1] + ")");
 
         if(typeof css_class != 'undefined')
             dot_group.classed(css_class, true);
@@ -209,7 +300,7 @@ export class D3LineChart extends D3Chart{
         return dot_group;
     }
     _moveValueDot(dot, coords, display_value){
-        dot.attr("transform", "translate(" + this.xScale(coords[0]) + "," + this.yScale(coords[1]) + ")");
+        dot.attr("transform", "translate(" + coords[0] + "," + coords[1] + ")");
         dot.select("text").text(display_value);
     }
 
