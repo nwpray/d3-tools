@@ -1,6 +1,6 @@
 {
   "name": "d3-tools",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A collections of tools to make using d3 easier.",
   "main": "index.js",
   "scripts": {
@@ -20,5 +20,12 @@
     "d3": "4.8.0",
     "bootstrap-event-listeners": "0.0.3",
     "es6-event-emitter": "1.9.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "webpack": "^3.8.1"
   }
 }
