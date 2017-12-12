@@ -284,6 +284,7 @@ export class D3LineChart extends D3Chart{
     _renderValueDot(coords, display_value, css_class){
         let dot_group = this.rootGroup.append("g")
             .classed("value-dot", true)
+            .style("transition", 'all 0.2s ease-in-out')
             .attr("transform",  "translate(" + coords[0] + "," + coords[1] + ")");
 
         if(typeof css_class != 'undefined')
