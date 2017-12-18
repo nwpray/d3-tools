@@ -161,6 +161,8 @@ export class D3LineChart extends D3Chart{
     Render(){
         let element = d3.select(this.binding).html("");
 
+        if(!element) return;
+
         if(this.Responsive()){
             let rect = element.node().getBoundingClientRect();
             this.Dimensions().OuterWidth(rect.width);
