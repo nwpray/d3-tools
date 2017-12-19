@@ -1,10 +1,12 @@
 {
   "name": "d3-tools",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A collections of tools to make using d3 easier.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build" : "webpack --progress",
+    "build:full" : "webpack --progress --config webpack-full.config.js"
   },
   "repository": {
     "type": "git",
